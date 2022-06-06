@@ -3,6 +3,7 @@
     <link href="{{ url_for("static", filename="css/bootstrap.min.css") }}" rel="stylesheet">
     <script src="{{ url_for("static", filename="js/jquery.min.js") }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jschardet/3.0.0/jschardet.min.js"></script>
+    <title>Resynchronise subtitles with your movie</title>
 </head>
 <body>
 
@@ -31,7 +32,7 @@
                         can drag and drop a file)
                     </legend>
                     <div class="form-group">
-                        <textarea class="form-control" id="inputTextarea" rows="50" accept-charset="UTF-8" autocomplete="off"></textarea>
+                        <textarea class="form-control" id="inputTextarea" rows="50" accept-charset="UTF-8" autocomplete="off" onchange="asyncProcessSubtitles()"></textarea>
                     </div>
                 </fieldset>
             </form>
@@ -40,16 +41,16 @@
             <form accept-charset="utf-8">
                 <fieldset class="form-group">
                     <legend><span class="badge rounded-pill bg-primary">step 2</span> Select a delay</legend>
-                    <div style="width: 100%; text-align: center;">|</div>
+                    <div style="width: 100%; text-align: center; font-size: 2em;">|</div>
                     <input id="rangeInput" type="range" class="form-range" id="customRange1" min="-15.0" max="15.0"
-                           value="0.0" step="0.1" oninput="updateDelayValueRange(event)">
+                           value="0.0" step="0.1" oninput="updateDelayValueRange(event)" autocomplete="off" style="position: relative; top: -35px;">
                     <label class="form-label"> or enter directly the value below (ex: +3.1, -1.9) in seconds</label>
                     <input id="textInput" type="text" class="form-control" onchange="updateDelayValueText(event)"
-                           value="+0.0">
-                    <button type="button" class="btn btn-sm btn-outline-success"
-                            style="width: 90%; margin-left: 5%; margin-top: 10px; padding: 10px;"
-                            onclick="processSubtitles()">Click to shift the subtitles!
-                    </button>
+                           value="+0.0" autocomplete="off">
+{#                    <button type="button" class="btn btn-sm btn-outline-success"#}
+{#                            style="width: 90%; margin-left: 5%; margin-top: 10px; padding: 10px;"#}
+{#                            onclick="processSubtitles()">Click to shift the subtitles!#}
+{#                    </button>#}
                 </fieldset>
                 <fieldset style="margin-top: 20px;">
                     <div class="form-group">
@@ -68,6 +69,7 @@
 <script>
     // The following comes from https://jsfiddle.net/gellermann/cgd7wmjz/
     var MAX_BYTES = 409600; // 100 KB
+    let filename = "subtitles.srt";
 
     function dragEnter(event) {
         console.log('dragEnter', event);
@@ -100,8 +102,9 @@
 
         for (var i = 0; i < files.length; i++) {
             file = files[i];
-            console.log(file, file.fileName);
-            $('#result').attr('name', file.fileName);
+            {#console.log(file, file.fileName);#}
+            filename = file.name;
+            {#$('#result').attr('name', file.fileName);#}
             reader = new FileReader();
             reader.onloadend = onFileLoaded;
             reader.readAsText(file, "UTF-8");
@@ -116,8 +119,7 @@
         console.log(encodingDetection);
 
         $('#inputTextarea').text(initialData);
-        //$('#result').name(initialData);
-        //$("#result").name(result#result);
+        processSubtitles();
     }
 
     var dropArea = $("#inputTextarea").get(0);
@@ -129,6 +131,7 @@
 
     function updateDelayValueText(event) {
         $("#rangeInput")[0].value = event.target.value;
+        asyncProcessSubtitles();
         console.log(event);
     }
 
@@ -138,7 +141,19 @@
         } else {
             $("#textInput")[0].value = event.target.value;
         }
+        asyncProcessSubtitles();
         console.log(event);
+    }
+
+    function asyncProcessSubtitles() {
+        let value = $("#textInput")[0].value;
+        setTimeout(() => {
+            let valueLater = $("#textInput")[0].value;
+
+            if (value == valueLater) {
+                processSubtitles();
+            }
+        }, 150);
     }
 
     function processSubtitles() {
@@ -173,7 +188,7 @@
 
     function downloadFile() {
         let text = $('#outputTextarea').text();
-        download("subtitles.srt", text);
+        download(filename, text);
     }
 
 </script>
