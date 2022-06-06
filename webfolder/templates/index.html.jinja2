@@ -1,0 +1,182 @@
+<html>
+<head>
+    <link href="{{ url_for("static", filename="css/bootstrap.min.css") }}" rel="stylesheet">
+    <script src="{{ url_for("static", filename="js/jquery.min.js") }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jschardet/3.0.0/jschardet.min.js"></script>
+</head>
+<body>
+
+<div class="container col-xxl-8 px-4 py-5">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+            <img src="{{ url_for("static", filename="img/img_watching_movie_sofa.png") }}"
+                 class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" loading="lazy"
+                 width="700" height="500">
+        </div>
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-bold lh-1 mb-3">Resynchronise subtitles with your movie</h1>
+            <p class="lead">This website enables to quickly resync subtitles files with the sound of your movie.</p>
+            <p class="lead">All you have to do is to upload a subtitle file, select a positive or negative delay, and
+                download the resynchronized subtitles!</p>
+        </div>
+    </div>
+</div>
+
+<div class="container col-xxl-8 px-4">
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <form accept-charset="utf-8">
+                <fieldset>
+                    <legend><span class="badge rounded-pill bg-primary">step 1</span> Enter the subtitles below <br/>(you
+                        can drag and drop a file)
+                    </legend>
+                    <div class="form-group">
+                        <textarea class="form-control" id="inputTextarea" rows="50" accept-charset="UTF-8" autocomplete="off"></textarea>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="col-lg-6">
+            <form accept-charset="utf-8">
+                <fieldset class="form-group">
+                    <legend><span class="badge rounded-pill bg-primary">step 2</span> Select a delay</legend>
+                    <div style="width: 100%; text-align: center;">|</div>
+                    <input id="rangeInput" type="range" class="form-range" id="customRange1" min="-15.0" max="15.0"
+                           value="0.0" step="0.1" oninput="updateDelayValueRange(event)">
+                    <label class="form-label"> or enter directly the value below (ex: +3.1, -1.9) in seconds</label>
+                    <input id="textInput" type="text" class="form-control" onchange="updateDelayValueText(event)"
+                           value="+0.0">
+                    <button type="button" class="btn btn-sm btn-outline-success"
+                            style="width: 90%; margin-left: 5%; margin-top: 10px; padding: 10px;"
+                            onclick="processSubtitles()">Click to shift the subtitles!
+                    </button>
+                </fieldset>
+                <fieldset style="margin-top: 20px;">
+                    <div class="form-group">
+                        <legend><span class="badge rounded-pill bg-primary">step 3</span> Get your new subtitle file
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadFile()">Download</button>
+                        </legend>
+                        <textarea class="form-control" id="outputTextarea" rows="42" accept-charset="UTF-8" autocomplete="off"></textarea>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // The following comes from https://jsfiddle.net/gellermann/cgd7wmjz/
+    var MAX_BYTES = 409600; // 100 KB
+
+    function dragEnter(event) {
+        console.log('dragEnter', event);
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    function dragExit(event) {
+        console.log('dragExit', event);
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    function dragOver(event) {
+        console.log('dragOver', event);
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    function drop(event) {
+
+        console.log('drop', event);
+        event.stopPropagation();
+        event.preventDefault();
+
+        var data = event.dataTransfer;
+        var files = data.files;
+        var file;
+        var reader;
+
+        for (var i = 0; i < files.length; i++) {
+            file = files[i];
+            console.log(file, file.fileName);
+            $('#result').attr('name', file.fileName);
+            reader = new FileReader();
+            reader.onloadend = onFileLoaded;
+            reader.readAsText(file, "UTF-8");
+        }
+    }
+
+    function onFileLoaded(event) {
+        console.log('onFileLoaded', event);
+        var initialData = event.currentTarget.result.substr(0, MAX_BYTES);
+
+        let encodingDetection = jschardet.detect(initialData);
+        console.log(encodingDetection);
+
+        $('#inputTextarea').text(initialData);
+        //$('#result').name(initialData);
+        //$("#result").name(result#result);
+    }
+
+    var dropArea = $("#inputTextarea").get(0);
+
+    dropArea.addEventListener("dragenter", dragEnter, false);
+    dropArea.addEventListener("dragexit", dragExit, false);
+    dropArea.addEventListener("dragover", dragOver, false);
+    dropArea.addEventListener("drop", drop, false);
+
+    function updateDelayValueText(event) {
+        $("#rangeInput")[0].value = event.target.value;
+        console.log(event);
+    }
+
+    function updateDelayValueRange(event) {
+        if (event.target.value >= 0.0) {
+            $("#textInput")[0].value = `+${event.target.value}`;
+        } else {
+            $("#textInput")[0].value = event.target.value;
+        }
+        console.log(event);
+    }
+
+    function processSubtitles() {
+        let delayValue = $("#rangeInput")[0].value;
+        let subtitlesText = $('#inputTextarea').text();
+
+        if (subtitlesText === "") {
+            subtitlesText = $("#inputTextarea")[0].value;
+        }
+
+        $.post("{{ url_for("web_blueprint.process_subtitles") }}", {
+            delayValue: delayValue,
+            subtitlesText: subtitlesText
+        }, function (data) {
+            $('#outputTextarea').text(data["result"]);
+        });
+
+    }
+
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    function downloadFile() {
+        let text = $('#outputTextarea').text();
+        download("subtitles.srt", text);
+    }
+
+</script>
+
+</body>
+</html>
