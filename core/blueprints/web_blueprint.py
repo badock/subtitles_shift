@@ -1,6 +1,7 @@
 import flask
 from flask import jsonify
 from core.subtitles import shift_subtitles_line
+from core.config import get_options
 
 
 web_blueprint = flask.Blueprint('web_blueprint', __name__, template_folder='templates')
@@ -8,7 +9,18 @@ web_blueprint = flask.Blueprint('web_blueprint', __name__, template_folder='temp
 
 @web_blueprint.route("/")
 def index():
-    return flask.render_template("index.html.jinja2")
+    options = get_options()
+
+    adsense_code = options.get("shiftsubs").get("adsense")
+    return flask.render_template("index.html.jinja2", adsense_code=adsense_code)
+
+
+@web_blueprint.route("/help")
+def help():
+    options = get_options()
+
+    adsense_code = options.get("shiftsubs").get("adsense")
+    return flask.render_template("help.html.jinja2", adsense_code=adsense_code)
 
 
 @web_blueprint.route("/process_subtitles", methods=["POST"])
