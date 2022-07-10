@@ -19,7 +19,7 @@ def get_options():
     config = None
     if os.path.exists(path):
         with open(path, "r") as f:
-            config = yaml.load(f)
+            config = yaml.safe_load(f)
 
     if config is not None:
         return config
