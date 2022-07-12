@@ -12,7 +12,8 @@ def index():
     options = get_options()
 
     adsense_code = options.get("shiftsubs").get("adsense")
-    return flask.render_template("index.html.jinja2", adsense_code=adsense_code)
+    # return flask.render_template("index.html.jinja2", adsense_code=adsense_code)
+    return flask.render_template("index_single_file.html.jinja2", adsense_code=adsense_code)
 
 
 @web_blueprint.route("/help")

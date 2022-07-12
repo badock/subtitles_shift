@@ -10,7 +10,7 @@
         </div>
         <div class="col-lg-6">
             <h1 class="display-5 fw-bold lh-1 mb-3">ShiftSubs is a tool that resynchronize subtitle files!</h1>
-            <p class="lead">All you have to do is to upload a SRT file, select a positive or negative delay, and
+            <p class="lead">All you have to do is to upload an SRT file, select a positive or negative delay, and
                 download the resynchronized subtitles!</p>
         </div>
     </div>
@@ -18,40 +18,42 @@
 
 <div class="container col-xxl-8 px-4">
     <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#step1">Step 1</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#step2">Step2</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#result">Result</a>
-            </li>
-        </ul>
-        <div id="myTabContent" class="tab-content" style="margin-top: 10px;">
-            <div class="tab-pane fade active show" id="step1">
-                <form accept-charset="utf-8">
+        <div id="step1">
+                <form accept-charset="utf-8" action="javascript:void(0)">
                     <fieldset>
                         <legend>
+                            <span class="badge rounded-pill bg-primary">Step 1</span>
                             Insert the subtitles below (you can drag and drop a file):
                         </legend>
                         <div class="form-group">
                             <textarea class="form-control" id="inputTextarea" rows="10" accept-charset="UTF-8"
-                                      autocomplete="off" onchange="asyncProcessSubtitles()"></textarea>
+                                      autocomplete="off" onchange="asyncProcessSubtitles()"
+                                      placeholder="0:00:01.00 --> 0:00:01.00
+first subtitle line
+
+0:00:02.00 --> 0:00:10.500
+second subtitle line"
+                            ></textarea>
                         </div>
                     </fieldset>
                 </form>
             </div>
-            <div class="tab-pane fade" id="step2">
-                <form accept-charset="utf-8">
+            <div id="step2">
+                <form accept-charset="utf-8" action="javascript:void(0)">
                     <fieldset class="form-group">
-                        <legend>Select how much you want to shift the subtitles:</legend>
+                        <legend>
+                            <span class="badge rounded-pill bg-primary">Step 2</span>
+                            Select how much you want to shift the subtitles:
+                        </legend>
+                        <div style="margin-bottom: 15px;">
+                            <span class="badge rounded-pill bg-info" style="float: left;">original subtitles appear after audio</span>
+                            <span class="badge rounded-pill bg-info" style="float: right;">original subtitles appear before audio</span>
+                        </div>
                         <div style="width: 100%; text-align: center; font-size: 2em;">|</div>
                         <input id="rangeInput" type="range" class="form-range" id="customRange1" min="-15.0" max="15.0"
                                value="0.0" step="0.1" oninput="updateDelayValueRange(event)" autocomplete="off"
                                style="position: relative; top: -35px;">
-                        <label class="form-label"> or enter directly the value below (ex: +3.1, -1.9) in seconds</label>
+                        <label class="form-label"> or enter directly the value below (ex: <code>+3.1</code>, <code>-1.9</code>) in second</label>
                         <input id="textInput" type="text" class="form-control" onchange="updateDelayValueText(event)"
                                value="+0.0" autocomplete="off">
                     </fieldset>
@@ -64,11 +66,13 @@
                 </div>
 
             </div>
-            <div class="tab-pane fade" id="result">
-                <form accept-charset="utf-8">
+            <div id="result">
+                <form accept-charset="utf-8" action="javascript:void(0)">
                     <fieldset>
                         <div class="form-group">
-                            <legend>Get your new subtitle file
+                            <legend>
+                                <span class="badge rounded-pill bg-primary">Step 3</span>
+                                Get your new subtitle file
                                 <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadFile()">
                                     Download
                                 </button>

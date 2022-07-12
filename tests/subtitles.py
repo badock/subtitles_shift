@@ -1,5 +1,6 @@
 import unittest
-from core.subtitles import detect_time_format, generate_time_formats
+import tempora
+from core.subtitles import detect_time_format, generate_time_formats, parse_time_delta
 
 
 class TestUtils(unittest.TestCase):
@@ -24,6 +25,11 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual(format4, ["\d+:\d+:\d+\.\d+", "\d+:\d+:\d+(\s|$)"])
 
+        line5 = "00:05:00,400 --> 00:05:15,300"
+        format5 = detect_time_format(line5)
+
+        self.assertEqual(format5, ["\d+:\d+:\d+\.\d+", "\d+:\d+:\d+(\s|$)"])
+
     def test_date_format_generation(self):
         line1 = "00:05:00,400 --> 00:05:15,300"
         format1 = generate_time_formats(line1)
@@ -45,4 +51,15 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual(format4, "(\d+:\d+:\d+\.\d+|\d+:\d+:\d+(\s|$))")
 
+    def test_timedelta(self):
+        time1 = "0:05:00,400"
+        timedelta1 = parse_time_delta(time1)
 
+        self.assertEqual(timedelta1.seconds, 300)
+        self.assertEqual(timedelta1.microseconds, 400000)
+
+        time2 = "0:05:00.400"
+        timedelta2 = parse_time_delta(time2)
+
+        self.assertEqual(timedelta2.seconds, 300)
+        self.assertEqual(timedelta2.microseconds, 400000)

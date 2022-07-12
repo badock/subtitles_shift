@@ -5,29 +5,23 @@
     <div class="container col-xxl-8 px-4">
         <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
             <h1>Help</h1>
-            <h3>1) Show me how to use the software</h3>
+            <h3>1) I don't understand how to use the tool</h3>
             <p>Below is an example of how to use ShiftSubs:</p>
             <p>
-                <video controls style="width: 100%;">
-                    <source src="{{ url_for("static", filename="video/how_to.mp4") }}" type="video/mp4">
-                </video>
+                <iframe width="560" height="415" src="https://www.youtube.com/embed/Djzqrpg0_6U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </p>
 
             <h3>2) I don't know how much to shift the subtitles</h3>
-            <p>First you have to stop the movie at moment when characters are speaking. When the character says a sentence, check if the subtitle appears before or after the audio and measure grossly how much is the time shift.</p>
+            <p>First you have to stop the movie at a moment when characters are speaking. When the character says a sentence, check if the subtitle appears before or after the audio and measure grossly how much is the time shift.</p>
             <p>Below is an example when the subtitle appears 1 second before the audio:</p>
             <p>
-                <video controls width="500">
-                    <source src="{{ url_for("static", filename="video/subtitles_1s_early.mp4") }}" type="video/mp4">
-                </video>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/k3ku4JexJIQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </p>
             <p>In this case, select <code>+1.0</code> in the step2.</p>
 
             <p>Below is an example when the subtitle appears 1 second after the audio:</p>
             <p>
-                <video controls width="500">
-                    <source src="{{ url_for("static", filename="video/subtitles_1s_late.mp4") }}" type="video/mp4">
-                </video>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/OTa8w71ULD4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </p>
             <p>In this case, select <code>-1.0</code> in the step2.</p>
         </div>

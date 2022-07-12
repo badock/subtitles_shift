@@ -25,6 +25,10 @@ def generate_time_formats(line):
     return generated_time_formats
 
 
+def parse_time_delta(date_str):
+    return tempora.parse_timedelta(date_str.replace(",", "."))
+
+
 def shift_subtitles_line(line_content, time_delay):
     time_formats = detect_time_format(line_content)
 
@@ -49,8 +53,8 @@ def shift_subtitles_line(line_content, time_delay):
 
         (t1, t2) = [t.strip() for t in groups[0].split("-->")]
 
-        parsed_t1 = tempora.parse_timedelta(t1)
-        parsed_t2 = tempora.parse_timedelta(t2)
+        parsed_t1 = parse_time_delta(t1)
+        parsed_t2 = parse_time_delta(t2)
 
         if direction == "+":
             new_t1 = parsed_t1 + parsed_time_delay
